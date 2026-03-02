@@ -1,28 +1,38 @@
-# FastVideoSave - New Frame
+# FastVideoSave
 
 ## Project Overview
-A static frontend UI project exported from UXMagic Copilot. It is an Instagram Reel downloader landing page called **FastVideoSave**.
+An Instagram Reel downloader web app called **FastVideoSave**. Users paste an Instagram Reel URL and can download it in HD, SD, or audio-only format.
 
 ## Tech Stack
-- **Language:** HTML, CSS, JavaScript (vanilla)
-- **Styling:** Tailwind CSS (via CDN), custom CSS variables in `styles.css`
-- **Icons:** Lucide Icons (via unpkg CDN)
-- **Server:** `serve` (npm package) for static file serving
+- **Runtime:** Node.js 20
+- **Backend:** Express.js (server.js)
+- **Frontend:** HTML, Tailwind CSS (CDN), Lucide Icons (CDN), vanilla JavaScript
+- **Key packages:** `instagram-url-direct`, `axios`, `fluent-ffmpeg`
 
 ## Project Structure
 ```
-New Frame/
-├── index.html    # Main HTML page
-├── styles.css    # Custom styles and CSS variables
-├── script.js     # Vanilla JS for interactivity
-└── package.json  # npm scripts and dependencies
+/
+├── server.js         # Express backend - API routes for download & proxy
+├── package.json      # npm dependencies and start script
+├── public/
+│   ├── index.html    # Main frontend page
+│   ├── css/styles.css
+│   └── js/script.js
+└── attached_assets/  # Reference images
 ```
 
 ## Running the App
-- **Dev workflow:** `cd 'New Frame' && npm run dev`
+- **Command:** `node server.js`
 - **Port:** 5000
 - **Host:** 0.0.0.0
 
+## API Endpoints
+- `POST /api/download` — Fetches Instagram Reel media URLs from a given Instagram URL
+- `GET /api/proxy-download` — Proxies the download of media files (restricted to instagram/fbcdn domains)
+
+## Security Notes
+- Proxy endpoint validates URLs against an allowlist (`instagram.com`, `cdninstagram.com`, `fbcdn.net`, `fbsbx.com`)
+- No sensitive credentials required — uses public Instagram media CDN links
+
 ## Deployment
-- **Type:** Static site
-- **Public directory:** `New Frame`
+- **Type:** Autoscale (Node.js server)
