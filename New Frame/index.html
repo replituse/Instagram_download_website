@@ -75,6 +75,7 @@
     
     </script>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <meta name="theme-color" content="#007bff">
     <meta name="color-scheme" content="light dark">
     <meta name="author" content="UXMagic Copilot">
@@ -541,8 +542,31 @@
             }
         });
 
+        async function downloadVideo(quality) {
+            const url = document.getElementById('videoUrl').value;
+            const results = JSON.parse(document.getElementById('resultsSection').dataset.media || '{}');
+            
+            // Handle multiple media (carousel)
+            let mediaUrl = results.mediaUrl;
+            if (Array.isArray(results.url_list) && results.url_list.length > 0) {
+                mediaUrl = results.url_list[0];
+            }
+            
+            if (!mediaUrl) {
+                alert('No download link available for this media.');
+                return;
+            }
+            
+            const filename = `instagram_${quality}_${Date.now()}.mp4`;
+            let downloadUrl = `/api/proxy-download?url=${encodeURIComponent(mediaUrl)}&filename=${filename}`;
+            if (quality === 'audio') {
+                downloadUrl += '&type=audio';
+            }
+            window.location.href = downloadUrl;
+        }
+
         // Form submission handler
-        document.getElementById('downloadForm').addEventListener('submit', function(e) {
+        document.getElementById('downloadForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const urlInput = document.getElementById('videoUrl');
@@ -551,11 +575,12 @@
             const errorText = document.getElementById('errorText');
             
             errorMessage.classList.add('hidden');
+            document.getElementById('resultsSection').classList.add('hidden');
             
-            const instagramReelPattern = /^https?:\/\/(www\.)?instagram\.com\/(reel|reels|p)\/[A-Za-z0-9_-]+\/?/;
+            const instagramReelPattern = /^https?:\/\/(www\.)?instagram\.com\/(reel|reels|p|tv)\/[A-Za-z0-9_-]+\/?/;
             
             if (!instagramReelPattern.test(url)) {
-                errorText.textContent = 'Please enter a valid Instagram Reel URL (e.g., https://www.instagram.com/reel/ABC123xyz/)';
+                errorText.textContent = 'Please enter a valid Instagram Reel or Post URL.';
                 errorMessage.classList.remove('hidden');
                 lucide.createIcons();
                 return;
@@ -567,22 +592,35 @@
             downloadBtn.disabled = true;
             lucide.createIcons();
             
-            setTimeout(() => {
+            try {
+                const response = await fetch('/api/download', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update UI with real data
+                    document.getElementById('videoAuthor').textContent = data.author;
+                    document.getElementById('videoThumbnail').src = data.thumbnail;
+                    document.getElementById('resultsSection').dataset.media = JSON.stringify(data);
+                    
+                    document.getElementById('resultsSection').classList.remove('hidden');
+                    document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    throw new Error(data.error || 'Failed to fetch media');
+                }
+            } catch (err) {
+                errorText.textContent = err.message || 'Failed to process link. Please try again.';
+                errorMessage.classList.remove('hidden');
+                lucide.createIcons();
+            } finally {
                 downloadBtn.innerHTML = originalBtnContent;
                 downloadBtn.disabled = false;
                 lucide.createIcons();
-                
-                document.getElementById('resultsSection').classList.remove('hidden');
-                document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                
-                document.getElementById('videoAuthor').textContent = '@' + url.split('/')[3] || 'username';
-            }, 2000);
+            }
         });
-        
-        function downloadVideo(quality) {
-            const url = document.getElementById('videoUrl').value;
-            alert(`Downloading Instagram Reel in ${quality.toUpperCase()} quality...\n\nIn a production environment, this would initiate the download from your backend server.`);
-        }
         
         function resetForm() {
             document.getElementById('videoUrl').value = '';

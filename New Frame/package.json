@@ -4,8 +4,8 @@
   "description": "UI project exported from UXMagic Copilot - New Frame",
   "main": "index.html",
   "scripts": {
-    "start": "npx serve .",
-    "dev": "npx live-server ."
+    "start": "npx serve . --listen tcp://0.0.0.0:5000",
+    "dev": "npx serve . --listen tcp://0.0.0.0:5000"
   },
   "keywords": [
     "ui",
