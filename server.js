@@ -1,56 +1,88 @@
 const express = require('express');
-const ig = require('instagram-url-direct');
-const instagramGetUrl = ig.instagramGetUrl;
 const axios = require('axios');
 const path = require('path');
+const fs = require('fs');
+const os = require('os');
+const { exec } = require('child_process');
+const { promisify } = require('util');
+
+const execAsync = promisify(exec);
 const app = express();
 const port = 5000;
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+function buildCookiesFile() {
+    const sessionId = process.env.INSTAGRAM_SESSIONID;
+    if (!sessionId) return null;
+
+    const cookiePath = path.join(os.tmpdir(), 'ig_cookies.txt');
+    const cookieContent = [
+        '# Netscape HTTP Cookie File',
+        `.instagram.com\tTRUE\t/\tTRUE\t9999999999\tsessionid\t${sessionId}`,
+        `instagram.com\tTRUE\t/\tTRUE\t9999999999\tsessionid\t${sessionId}`
+    ].join('\n');
+    fs.writeFileSync(cookiePath, cookieContent);
+    return cookiePath;
+}
+
+async function getInstagramMedia(url) {
+    const cookiesFile = buildCookiesFile();
+    const cookiesArg = cookiesFile ? `--cookies "${cookiesFile}"` : '';
+    const { stdout } = await execAsync(
+        `yt-dlp --dump-json --no-playlist ${cookiesArg} "${url}"`,
+        { timeout: 30000 }
+    );
+    return JSON.parse(stdout);
+}
+
 app.post('/api/download', async (req, res) => {
     let { url } = req.body;
     if (!url) return res.status(400).json({ error: 'URL is required' });
 
+    if (!process.env.INSTAGRAM_SESSIONID) {
+        return res.status(503).json({
+            error: 'Instagram session not configured. Please add your INSTAGRAM_SESSIONID to the environment secrets.'
+        });
+    }
+
     try {
-        // Clean the URL - remove query params that might interfere
         const urlObj = new URL(url);
         const cleanUrl = `${urlObj.origin}${urlObj.pathname}`;
-        
-        console.log('Fetching URL:', cleanUrl);
-        
-        // Try with a fallback if the library fails with 401
-        let results;
-        try {
-            results = await instagramGetUrl(cleanUrl);
-        } catch (libError) {
-            console.error('Library error:', libError.message);
-            if (libError.message.includes('401')) {
-                return res.status(401).json({ 
-                    error: 'Instagram blocked the request (401). This often happens with server-side scrapers. Please try a different link or try again in a few minutes.' 
-                });
-            }
-            throw libError;
-        }
 
-        if (!results || !results.url_list || results.url_list.length === 0) {
-            throw new Error('No download links found. The post might be private, deleted, or the link is invalid.');
-        }
-        
-        const mediaUrl = results.url_list[0];
-        
+        console.log('Fetching URL:', cleanUrl);
+
+        const data = await getInstagramMedia(cleanUrl);
+
+        const formats = data.formats || [];
+        const videoFormats = formats.filter(f => f.vcodec && f.vcodec !== 'none' && f.url);
+        const audioFormats = formats.filter(f => f.acodec && f.acodec !== 'none' && (!f.vcodec || f.vcodec === 'none') && f.url);
+
+        videoFormats.sort((a, b) => (b.height || 0) - (a.height || 0));
+
+        const hdUrl = videoFormats[0]?.url || data.url;
+        const sdUrl = videoFormats.length > 1 ? videoFormats[Math.floor(videoFormats.length / 2)]?.url : hdUrl;
+        const audioUrl = audioFormats[0]?.url || null;
+
+        const url_list = [hdUrl];
+        if (sdUrl && sdUrl !== hdUrl) url_list.push(sdUrl);
+        if (audioUrl) url_list.push(audioUrl);
+
         res.json({
             success: true,
-            mediaUrl: mediaUrl,
-            url_list: results.url_list,
-            author: 'Instagram User',
-            duration: '0:30',
-            thumbnail: mediaUrl 
+            mediaUrl: hdUrl,
+            url_list,
+            hdUrl,
+            sdUrl,
+            audioUrl,
+            author: data.uploader || data.channel || 'Instagram User',
+            duration: data.duration_string || '0:30',
+            thumbnail: data.thumbnail || hdUrl
         });
     } catch (error) {
-        console.error('Download error:', error);
-        res.status(500).json({ error: 'Instagram restricted this request or the link is invalid. Please try again later or check if the post is public.' });
+        console.error('Download error:', error.message);
+        res.status(500).json({ error: 'Could not fetch this Instagram post. Make sure the link is public and valid.' });
     }
 });
 
