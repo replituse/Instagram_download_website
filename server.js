@@ -19,7 +19,20 @@ app.post('/api/download', async (req, res) => {
         const cleanUrl = `${urlObj.origin}${urlObj.pathname}`;
         
         console.log('Fetching URL:', cleanUrl);
-        const results = await instagramGetUrl(cleanUrl);
+        
+        // Try with a fallback if the library fails with 401
+        let results;
+        try {
+            results = await instagramGetUrl(cleanUrl);
+        } catch (libError) {
+            console.error('Library error:', libError.message);
+            if (libError.message.includes('401')) {
+                return res.status(401).json({ 
+                    error: 'Instagram blocked the request (401). This often happens with server-side scrapers. Please try a different link or try again in a few minutes.' 
+                });
+            }
+            throw libError;
+        }
 
         if (!results || !results.url_list || results.url_list.length === 0) {
             throw new Error('No download links found. The post might be private, deleted, or the link is invalid.');
@@ -33,7 +46,7 @@ app.post('/api/download', async (req, res) => {
             url_list: results.url_list,
             author: 'Instagram User',
             duration: '0:30',
-            thumbnail: mediaUrl // This will be proxied by the frontend
+            thumbnail: mediaUrl 
         });
     } catch (error) {
         console.error('Download error:', error);
