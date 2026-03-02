@@ -1,5 +1,6 @@
 const express = require('express');
-const instagramGetUrl = require('instagram-url-direct');
+const ig = require('instagram-url-direct');
+const instagramGetUrl = ig.instagramGetUrl;
 const axios = require('axios');
 const path = require('path');
 const app = express();
@@ -14,21 +15,22 @@ app.post('/api/download', async (req, res) => {
 
     try {
         const results = await instagramGetUrl(url);
+
         if (!results || !results.url_list || results.url_list.length === 0) {
-            throw new Error('No download links found');
+            throw new Error('No download links found. The post might be private, deleted, or the link is invalid.');
         }
         
-        // Return the first found media link
         res.json({
             success: true,
             mediaUrl: results.url_list[0],
+            url_list: results.url_list,
             author: 'Instagram User',
             duration: '0:30',
             thumbnail: results.url_list[0]
         });
     } catch (error) {
         console.error('Download error:', error);
-        res.status(500).json({ error: 'Failed to fetch Instagram media. Please check the URL.' });
+        res.status(500).json({ error: 'Instagram restricted this request or the link is invalid. Please try again later or check if the post is public.' });
     }
 });
 

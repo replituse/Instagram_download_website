@@ -545,10 +545,20 @@
         async function downloadVideo(quality) {
             const url = document.getElementById('videoUrl').value;
             const results = JSON.parse(document.getElementById('resultsSection').dataset.media || '{}');
-            if (!results.mediaUrl) return;
+            
+            // Handle multiple media (carousel)
+            let mediaUrl = results.mediaUrl;
+            if (Array.isArray(results.url_list) && results.url_list.length > 0) {
+                mediaUrl = results.url_list[0];
+            }
+            
+            if (!mediaUrl) {
+                alert('No download link available for this media.');
+                return;
+            }
             
             const filename = `instagram_${quality}_${Date.now()}.mp4`;
-            window.location.href = `/api/proxy-download?url=${encodeURIComponent(results.mediaUrl)}&filename=${filename}`;
+            window.location.href = `/api/proxy-download?url=${encodeURIComponent(mediaUrl)}&filename=${filename}`;
         }
 
         // Form submission handler
