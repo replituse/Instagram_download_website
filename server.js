@@ -7,20 +7,24 @@ const app = express();
 const port = 5000;
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'New Frame')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.post('/api/download', async (req, res) => {
-    const { url } = req.body;
+    let { url } = req.body;
     if (!url) return res.status(400).json({ error: 'URL is required' });
 
     try {
-        const results = await instagramGetUrl(url);
+        // Clean the URL - remove query params that might interfere
+        const urlObj = new URL(url);
+        const cleanUrl = `${urlObj.origin}${urlObj.pathname}`;
+        
+        console.log('Fetching URL:', cleanUrl);
+        const results = await instagramGetUrl(cleanUrl);
 
         if (!results || !results.url_list || results.url_list.length === 0) {
             throw new Error('No download links found. The post might be private, deleted, or the link is invalid.');
         }
         
-        // Use the first link for thumbnail if not provided
         const mediaUrl = results.url_list[0];
         
         res.json({
@@ -29,7 +33,7 @@ app.post('/api/download', async (req, res) => {
             url_list: results.url_list,
             author: 'Instagram User',
             duration: '0:30',
-            thumbnail: mediaUrl // Instagram usually returns a direct link that can serve as thumbnail
+            thumbnail: mediaUrl // This will be proxied by the frontend
         });
     } catch (error) {
         console.error('Download error:', error);
