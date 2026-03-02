@@ -65,7 +65,8 @@ app.get('/api/proxy-download', async (req, res) => {
             url: url,
             responseType: 'stream',
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                'Referer': 'https://www.instagram.com/'
             }
         });
 
@@ -73,11 +74,15 @@ app.get('/api/proxy-download', async (req, res) => {
         if (type === 'audio') {
             res.setHeader('Content-Type', 'audio/mpeg');
             finalFilename = finalFilename.replace('.mp4', '.mp3');
+        } else if (type === 'image') {
+            res.setHeader('Content-Type', 'image/jpeg');
         } else {
             res.setHeader('Content-Type', 'video/mp4');
         }
 
-        res.setHeader('Content-Disposition', `attachment; filename="${finalFilename}"`);
+        if (type !== 'image') {
+            res.setHeader('Content-Disposition', `attachment; filename="${finalFilename}"`);
+        }
         response.data.pipe(res);
     } catch (error) {
         console.error('Proxy download error:', error.message);
