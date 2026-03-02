@@ -37,8 +37,24 @@ app.post('/api/download', async (req, res) => {
     }
 });
 
+const ALLOWED_HOSTS = ['instagram.com', 'cdninstagram.com', 'fbcdn.net', 'fbsbx.com'];
+
+function isAllowedUrl(urlStr) {
+    try {
+        const parsed = new URL(urlStr);
+        return ALLOWED_HOSTS.some(host => parsed.hostname === host || parsed.hostname.endsWith('.' + host));
+    } catch {
+        return false;
+    }
+}
+
 app.get('/api/proxy-download', async (req, res) => {
     const { url, filename, type } = req.query;
+
+    if (!url || !isAllowedUrl(url)) {
+        return res.status(400).send('Invalid or disallowed URL');
+    }
+
     try {
         const response = await axios({
             method: 'get',
