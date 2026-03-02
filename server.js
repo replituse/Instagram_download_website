@@ -53,14 +53,20 @@ app.post('/api/download', async (req, res) => {
         const data = await getInstagramMedia(cleanUrl);
 
         const formats = data.formats || [];
-        const videoFormats = formats.filter(f => f.vcodec && f.vcodec !== 'none' && f.url);
-        const audioFormats = formats.filter(f => f.acodec && f.acodec !== 'none' && (!f.vcodec || f.vcodec === 'none') && f.url);
+        // Find best format that has both video and audio
+        const combinedFormats = formats.filter(f => f.vcodec !== 'none' && f.acodec !== 'none' && f.url);
+        
+        // Fallback to separate video/audio if no combined exists (rare for IG, but good for safety)
+        const videoOnlyFormats = formats.filter(f => f.vcodec !== 'none' && (f.acodec === 'none' || !f.acodec) && f.url);
+        const audioFormats = formats.filter(f => f.acodec !== 'none' && (f.vcodec === 'none' || !f.vcodec) && f.url);
 
-        videoFormats.sort((a, b) => (b.height || 0) - (a.height || 0));
+        combinedFormats.sort((a, b) => (b.height || 0) - (a.height || 0));
+        videoOnlyFormats.sort((a, b) => (b.height || 0) - (a.height || 0));
+        audioFormats.sort((a, b) => (b.abr || 0) - (a.abr || 0));
 
-        const hdUrl = videoFormats[0]?.url || data.url;
-        const sdUrl = videoFormats.length > 1 ? videoFormats[Math.floor(videoFormats.length / 2)]?.url : hdUrl;
-        const audioUrl = audioFormats[0]?.url || null;
+        const hdUrl = combinedFormats[0]?.url || videoOnlyFormats[0]?.url || data.url;
+        const sdUrl = combinedFormats.length > 1 ? combinedFormats[Math.floor(combinedFormats.length / 2)]?.url : (videoOnlyFormats.length > 1 ? videoOnlyFormats[Math.floor(videoOnlyFormats.length / 2)]?.url : hdUrl);
+        const audioUrl = audioFormats[0]?.url || combinedFormats[0]?.url || null;
 
         const url_list = [hdUrl];
         if (sdUrl && sdUrl !== hdUrl) url_list.push(sdUrl);

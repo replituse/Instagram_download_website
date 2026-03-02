@@ -69,11 +69,27 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     window.downloadVideo = function(quality) {
-        if (!currentMediaData || !currentMediaData.mediaUrl) return;
+        if (!currentMediaData) return;
         
-        const url = currentMediaData.mediaUrl;
-        const type = quality === 'audio' ? 'audio' : 'video';
-        const filename = `instagram-media-${quality}.${quality === 'audio' ? 'mp3' : 'mp4'}`;
+        let url;
+        let type;
+        let filename;
+
+        if (quality === 'audio') {
+            url = currentMediaData.audioUrl || currentMediaData.hdUrl;
+            type = 'audio';
+            filename = `instagram-audio-${Date.now()}.mp3`;
+        } else if (quality === 'hd') {
+            url = currentMediaData.hdUrl;
+            type = 'video';
+            filename = `instagram-video-hd-${Date.now()}.mp4`;
+        } else {
+            url = currentMediaData.sdUrl || currentMediaData.hdUrl;
+            type = 'video';
+            filename = `instagram-video-sd-${Date.now()}.mp4`;
+        }
+
+        if (!url) return;
         
         window.location.href = `/api/proxy-download?url=${encodeURIComponent(url)}&filename=${encodeURIComponent(filename)}&type=${type}`;
     };
