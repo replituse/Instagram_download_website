@@ -21,8 +21,7 @@ async function getInstagramMedia(url) {
         const cookiePath = path.join(os.tmpdir(), `ig_cookies_${Date.now()}.txt`);
         const cookieContent = [
             '# Netscape HTTP Cookie File',
-            `.instagram.com\tTRUE\t/\tTRUE\t9999999999\tsessionid\t${sessionId}`,
-            `instagram.com\tTRUE\t/\tTRUE\t9999999999\tsessionid\t${sessionId}`
+            `.instagram.com\tTRUE\t/\tTRUE\t9999999999\tsessionid\t${sessionId}`
         ].join('\n');
         fs.writeFileSync(cookiePath, cookieContent);
         command = `yt-dlp --dump-json --no-playlist --cookies "${cookiePath}" "${url}"`;
