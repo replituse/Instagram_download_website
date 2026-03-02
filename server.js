@@ -13,39 +13,37 @@ const port = 5000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-function buildCookiesFile() {
-    const sessionId = process.env.INSTAGRAM_SESSIONID;
-    if (!sessionId) return null;
-
-    const cookiePath = path.join(os.tmpdir(), 'ig_cookies.txt');
-    const cookieContent = [
-        '# Netscape HTTP Cookie File',
-        `.instagram.com\tTRUE\t/\tTRUE\t9999999999\tsessionid\t${sessionId}`,
-        `instagram.com\tTRUE\t/\tTRUE\t9999999999\tsessionid\t${sessionId}`
-    ].join('\n');
-    fs.writeFileSync(cookiePath, cookieContent);
-    return cookiePath;
-}
-
 async function getInstagramMedia(url) {
-    const cookiesFile = buildCookiesFile();
-    const cookiesArg = cookiesFile ? `--cookies "${cookiesFile}"` : '';
-    const { stdout } = await execAsync(
-        `yt-dlp --dump-json --no-playlist ${cookiesArg} "${url}"`,
-        { timeout: 30000 }
-    );
-    return JSON.parse(stdout);
+    const sessionId = process.env.INSTAGRAM_SESSIONID;
+    let command = `yt-dlp --dump-json --no-playlist "${url}"`;
+    
+    if (sessionId) {
+        const cookiePath = path.join(os.tmpdir(), `ig_cookies_${Date.now()}.txt`);
+        const cookieContent = [
+            '# Netscape HTTP Cookie File',
+            `.instagram.com\tTRUE\t/\tTRUE\t9999999999\tsessionid\t${sessionId}`,
+            `instagram.com\tTRUE\t/\tTRUE\t9999999999\tsessionid\t${sessionId}`
+        ].join('\n');
+        fs.writeFileSync(cookiePath, cookieContent);
+        command = `yt-dlp --dump-json --no-playlist --cookies "${cookiePath}" "${url}"`;
+        
+        try {
+            const { stdout } = await execAsync(command, { timeout: 30000 });
+            if (fs.existsSync(cookiePath)) fs.unlinkSync(cookiePath);
+            return JSON.parse(stdout);
+        } catch (error) {
+            if (fs.existsSync(cookiePath)) fs.unlinkSync(cookiePath);
+            throw error;
+        }
+    } else {
+        const { stdout } = await execAsync(command, { timeout: 30000 });
+        return JSON.parse(stdout);
+    }
 }
 
 app.post('/api/download', async (req, res) => {
     let { url } = req.body;
     if (!url) return res.status(400).json({ error: 'URL is required' });
-
-    if (!process.env.INSTAGRAM_SESSIONID) {
-        return res.status(503).json({
-            error: 'Instagram session not configured. Please add your INSTAGRAM_SESSIONID to the environment secrets.'
-        });
-    }
 
     try {
         const urlObj = new URL(url);
