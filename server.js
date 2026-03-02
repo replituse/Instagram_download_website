@@ -75,7 +75,7 @@ app.post('/api/download', async (req, res) => {
             audioUrl,
             author: data.uploader || data.channel || 'Instagram User',
             duration: data.duration_string || '0:30',
-            thumbnail: data.thumbnail || hdUrl
+            thumbnail: data.thumbnail || data.thumbnails?.[0]?.url || hdUrl
         });
     } catch (error) {
         console.error('Download error:', error.message);

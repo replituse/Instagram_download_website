@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Update UI
             // Use proxy for thumbnail to avoid CORS/403 issues
-            videoThumbnail.src = `/api/proxy-download?url=${encodeURIComponent(data.mediaUrl)}&type=image`;
+            videoThumbnail.src = `/api/proxy-download?url=${encodeURIComponent(data.thumbnail)}&type=image`;
             videoAuthor.textContent = data.author || '@instagram_user';
             videoDuration.textContent = data.duration || '0:30';
             
