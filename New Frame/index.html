@@ -558,7 +558,11 @@
             }
             
             const filename = `instagram_${quality}_${Date.now()}.mp4`;
-            window.location.href = `/api/proxy-download?url=${encodeURIComponent(mediaUrl)}&filename=${filename}`;
+            let downloadUrl = `/api/proxy-download?url=${encodeURIComponent(mediaUrl)}&filename=${filename}`;
+            if (quality === 'audio') {
+                downloadUrl += '&type=audio';
+            }
+            window.location.href = downloadUrl;
         }
 
         // Form submission handler
@@ -571,6 +575,7 @@
             const errorText = document.getElementById('errorText');
             
             errorMessage.classList.add('hidden');
+            document.getElementById('resultsSection').classList.add('hidden');
             
             const instagramReelPattern = /^https?:\/\/(www\.)?instagram\.com\/(reel|reels|p|tv)\/[A-Za-z0-9_-]+\/?/;
             

@@ -20,13 +20,16 @@ app.post('/api/download', async (req, res) => {
             throw new Error('No download links found. The post might be private, deleted, or the link is invalid.');
         }
         
+        // Use the first link for thumbnail if not provided
+        const mediaUrl = results.url_list[0];
+        
         res.json({
             success: true,
-            mediaUrl: results.url_list[0],
+            mediaUrl: mediaUrl,
             url_list: results.url_list,
             author: 'Instagram User',
             duration: '0:30',
-            thumbnail: results.url_list[0]
+            thumbnail: mediaUrl // Instagram usually returns a direct link that can serve as thumbnail
         });
     } catch (error) {
         console.error('Download error:', error);
@@ -35,7 +38,7 @@ app.post('/api/download', async (req, res) => {
 });
 
 app.get('/api/proxy-download', async (req, res) => {
-    const { url, filename } = req.query;
+    const { url, filename, type } = req.query;
     try {
         const response = await axios({
             method: 'get',
@@ -45,7 +48,16 @@ app.get('/api/proxy-download', async (req, res) => {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
             }
         });
-        res.setHeader('Content-Disposition', `attachment; filename="${filename || 'instagram-media.mp4'}"`);
+
+        let finalFilename = filename || 'instagram-media.mp4';
+        if (type === 'audio') {
+            res.setHeader('Content-Type', 'audio/mpeg');
+            finalFilename = finalFilename.replace('.mp4', '.mp3');
+        } else {
+            res.setHeader('Content-Type', 'video/mp4');
+        }
+
+        res.setHeader('Content-Disposition', `attachment; filename="${finalFilename}"`);
         response.data.pipe(res);
     } catch (error) {
         console.error('Proxy download error:', error.message);
