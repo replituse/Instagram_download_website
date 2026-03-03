@@ -14,29 +14,18 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 async function getInstagramMedia(url) {
-    const sessionId = process.env.INSTAGRAM_SESSIONID;
-    let command = `yt-dlp --dump-json --no-playlist "${url}"`;
+    const sessionId = process.env.INSTAGRAM_SESSIONID || '';
+    const command = `./venv/bin/python3 yt_dlp_wrapper.py "${url}" "${sessionId}"`;
     
-    if (sessionId) {
-        const cookiePath = path.join(os.tmpdir(), `ig_cookies_${Date.now()}.txt`);
-        const cookieContent = [
-            '# Netscape HTTP Cookie File',
-            `.instagram.com\tTRUE\t/\tTRUE\t9999999999\tsessionid\t${sessionId}`
-        ].join('\n');
-        fs.writeFileSync(cookiePath, cookieContent);
-        command = `yt-dlp --dump-json --no-playlist --cookies "${cookiePath}" "${url}"`;
-        
-        try {
-            const { stdout } = await execAsync(command, { timeout: 30000 });
-            if (fs.existsSync(cookiePath)) fs.unlinkSync(cookiePath);
-            return JSON.parse(stdout);
-        } catch (error) {
-            if (fs.existsSync(cookiePath)) fs.unlinkSync(cookiePath);
-            throw error;
-        }
-    } else {
+    try {
         const { stdout } = await execAsync(command, { timeout: 30000 });
-        return JSON.parse(stdout);
+        const result = JSON.parse(stdout);
+        if (result.error) {
+            throw new Error(result.error);
+        }
+        return result;
+    } catch (error) {
+        throw error;
     }
 }
 
