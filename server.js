@@ -53,7 +53,37 @@ app.post('/api/download', async (req, res) => {
         const data = await getInstagramMedia(cleanUrl);
 
         const formats = data.formats || [];
-        // Find best format that has both video and audio
+        
+        // Handle Multiple Media (Carousel)
+        if (data.entries && data.entries.length > 0) {
+            const items = data.entries.map(entry => {
+                const entryFormats = entry.formats || [];
+                const combined = entryFormats.filter(f => f.vcodec !== 'none' && f.acodec !== 'none' && f.url);
+                const videoOnly = entryFormats.filter(f => f.vcodec !== 'none' && (f.acodec === 'none' || !f.acodec) && f.url);
+                const audio = entryFormats.filter(f => f.acodec !== 'none' && (f.vcodec === 'none' || !f.vcodec) && f.url);
+
+                combined.sort((a, b) => (b.height || 0) - (a.height || 0));
+                videoOnly.sort((a, b) => (b.height || 0) - (a.height || 0));
+
+                const hd = combined[0]?.url || videoOnly[0]?.url || entry.url;
+                return {
+                    url: hd,
+                    thumbnail: entry.thumbnail || entry.thumbnails?.[0]?.url || hd,
+                    type: (entry.vcodec && entry.vcodec !== 'none') ? 'video' : 'image',
+                    author: entry.uploader || data.uploader || 'Instagram User'
+                };
+            });
+
+            return res.json({
+                success: true,
+                isCarousel: true,
+                items,
+                author: data.uploader || data.channel || 'Instagram User',
+                thumbnail: data.thumbnail || data.thumbnails?.[0]?.url || items[0]?.thumbnail
+            });
+        }
+
+        // Existing single media logic
         const combinedFormats = formats.filter(f => f.vcodec !== 'none' && f.acodec !== 'none' && f.url);
         
         // Fallback to separate video/audio if no combined exists (rare for IG, but good for safety)

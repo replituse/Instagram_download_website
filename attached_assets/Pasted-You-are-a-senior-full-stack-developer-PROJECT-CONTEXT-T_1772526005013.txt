@@ -1,0 +1,71 @@
+You are a senior full-stack developer.
+
+PROJECT CONTEXT:
+This project already supports downloading Instagram Reels using a pasted Reel URL.
+The Reel download logic is fully working and MUST NOT be modified, refactored, or broken.
+
+TASK:
+Enhance the existing functionality to support Instagram Post URLs (photo posts, carousel posts, and video posts) in addition to Reels.
+
+IMPORTANT CONSTRAINTS:
+- Do NOT change the existing Reel download logic.
+- Do NOT modify existing Reel API routes.
+- Do NOT alter working Reel parsing functions.
+- Add new logic separately and safely.
+- Keep backward compatibility 100%.
+
+REQUIREMENTS:
+
+1. When a user pastes an Instagram URL:
+   - Automatically detect whether the URL is:
+     - Reel ( /reel/ )
+     - Post ( /p/ )
+     - Video Post
+     - Carousel Post (multiple images/videos)
+
+2. If the link is a Reel:
+   - Use existing Reel download logic (no changes).
+
+3. If the link is a Post:
+   - Show a download option similar to Reels.
+   - If it is:
+        a) Single image → download image
+        b) Single video → download video
+        c) Carousel → show all media items with individual download buttons + "Download All" option
+
+4. UI Requirements:
+   - Keep the same design style.
+   - Show media preview before download.
+   - Show proper loading state.
+   - Show error message if link invalid.
+   - Keep mobile responsive behavior.
+
+5. Technical Implementation:
+   - Create a new utility function:
+        detectInstagramUrlType(url)
+   - Create new handler:
+        handlePostDownload()
+   - Reuse existing download component styling.
+   - Do NOT duplicate Reel logic.
+   - Keep code modular and clean.
+
+6. Error Handling:
+   - Invalid URL
+   - Private account
+   - Removed post
+   - API failure
+
+7. Maintain:
+   - Clean separation of logic
+   - Reusable components
+   - No breaking changes
+
+OUTPUT:
+Provide updated:
+- URL detection function
+- Post download handler
+- UI modification snippet
+- Any new backend route if required
+
+Do not rewrite the entire project.
+Only provide safe, incremental changes.
