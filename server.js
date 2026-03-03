@@ -15,7 +15,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 async function getInstagramMedia(url) {
     const sessionId = process.env.INSTAGRAM_SESSIONID || '';
-    const command = `./venv/bin/python3 yt_dlp_wrapper.py "${url}" "${sessionId}"`;
+    const command = `python3 yt_dlp_wrapper.py "${url}" "${sessionId}"`;
     
     try {
         const { stdout } = await execAsync(command, { timeout: 30000 });
