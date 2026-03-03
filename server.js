@@ -170,23 +170,10 @@ app.get('/api/proxy-download', async (req, res) => {
 
 app.listen(port, '0.0.0.0', async () => {
     console.log(`Backend listening at http://0.0.0.0:${port}`);
-    
-    // Check yt-dlp on startup
     try {
-        const { exec } = require('child_process');
-        const { promisify } = require('util');
-        const execAsync = promisify(exec);
         const { stdout } = await execAsync('yt-dlp --version');
         console.log(`yt-dlp version: ${stdout.trim()}`);
     } catch (error) {
-        console.error('yt-dlp not found or error checking version:', error.message);
-        console.log('Attempting to install yt-dlp...');
-        try {
-            const { execSync } = require('child_process');
-            execSync('python3 -m pip install yt-dlp');
-            console.log('yt-dlp installed successfully');
-        } catch (installError) {
-            console.error('Failed to install yt-dlp:', installError.message);
-        }
+        console.error('yt-dlp not found:', error.message);
     }
 });
