@@ -8,8 +8,8 @@ def get_info(url, session_id=None):
     ydl_opts = {
         'quiet': True,
         'no_warnings': True,
-        'format': 'best',
         'extract_flat': False,
+        'skip_download': True,
     }
     
     cookie_path = None
