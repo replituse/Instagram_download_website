@@ -1,0 +1,54 @@
+Fetching URL: https://www.instagram.com/p/DVaEHaQgc--/
+Download error: Command failed: yt-dlp --dump-json --no-playlist "https://www.instagram.com/p/DVaEHaQgc--/"
+ERROR: [Instagram] DVaEHaQgc--: There is no video in this post
+
+Download error: Command failed: yt-dlp --dump-json --no-playlist "https://www.instagram.com/p/DVaEHaQgc--/"
+ERROR: [Instagram] DVaEHaQgc--: There is no video in this post
+
+Fetching URL: https://www.instagram.com/reel/DTZxpUuAVCl/
+Fetching URL: https://www.instagram.com/reel/DTZxpUuAVCl/
+Download error: Command failed: yt-dlp --dump-json --no-playlist "https://www.instagram.com/reel/DTZxpUuAVCl/"
+WARNING: [Instagram] DTZxpUuAVCl: General metadata extraction failed (some metadata might be missing).
+WARNING: [Instagram] unable to extract shared data; please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U
+WARNING: [Instagram] Main webpage is locked behind the login page. Retrying with embed webpage (some metadata might be missing).
+WARNING: [Instagram] unable to extract additional data; please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U
+ERROR: [Instagram] DTZxpUuAVCl: Requested content is not available, rate-limit reached or login required. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies
+
+Download error: Command failed: yt-dlp --dump-json --no-playlist "https://www.instagram.com/reel/DTZxpUuAVCl/"
+WARNING: [Instagram] DTZxpUuAVCl: General metadata extraction failed (some metadata might be missing).
+WARNING: [Instagram] unable to extract shared data; please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U
+WARNING: [Instagram] Main webpage is locked behind the login page. Retrying with embed webpage (some metadata might be missing).
+WARNING: [Instagram] unable to extract additional data; please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U
+ERROR: [Instagram] DTZxpUuAVCl: Requested content is not available, rate-limit reached or login required. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies
+
+Fetching URL: https://www.instagram.com/reel/DUnjiPSDXDQ/
+Fetching URL: https://www.instagram.com/reel/DUnjiPSDXDQ/
+Download error: Command failed: yt-dlp --dump-json --no-playlist "https://www.instagram.com/reel/DUnjiPSDXDQ/"
+WARNING: [Instagram] DUnjiPSDXDQ: General metadata extraction failed (some metadata might be missing).
+WARNING: [Instagram] unable to extract shared data; please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U
+WARNING: [Instagram] Main webpage is locked behind the login page. Retrying with embed webpage (some metadata might be missing).
+WARNING: [Instagram] unable to extract additional data; please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U
+ERROR: [Instagram] DUnjiPSDXDQ: Requested content is not available, rate-limit reached or login required. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies
+
+Download error: Command failed: yt-dlp --dump-json --no-playlist "https://www.instagram.com/reel/DUnjiPSDXDQ/"
+WARNING: [Instagram] DUnjiPSDXDQ: General metadata extraction failed (some metadata might be missing).
+WARNING: [Instagram] unable to extract shared data; please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U
+WARNING: [Instagram] Main webpage is locked behind the login page. Retrying with embed webpage (some metadata might be missing).
+WARNING: [Instagram] unable to extract additional data; please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U
+ERROR: [Instagram] DUnjiPSDXDQ: Requested content is not available, rate-limit reached or login required. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies
+
+Fetching URL: https://www.instagram.com/reel/DUnjiPSDXDQ/
+Fetching URL: https://www.instagram.com/reel/DUnjiPSDXDQ/
+Download error: Command failed: yt-dlp --dump-json --no-playlist "https://www.instagram.com/reel/DUnjiPSDXDQ/"
+WARNING: [Instagram] DUnjiPSDXDQ: General metadata extraction failed (some metadata might be missing).
+WARNING: [Instagram] unable to extract shared data; please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U
+WARNING: [Instagram] Main webpage is locked behind the login page. Retrying with embed webpage (some metadata might be missing).
+WARNING: [Instagram] unable to extract additional data; please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U
+ERROR: [Instagram] DUnjiPSDXDQ: Requested content is not available, rate-limit reached or login required. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies
+
+Download error: Command failed: yt-dlp --dump-json --no-playlist "https://www.instagram.com/reel/DUnjiPSDXDQ/"
+WARNING: [Instagram] DUnjiPSDXDQ: General metadata extraction failed (some metadata might be missing).
+WARNING: [Instagram] unable to extract shared data; please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U
+WARNING: [Instagram] Main webpage is locked behind the login page. Retrying with embed webpage (some metadata might be missing).
+WARNING: [Instagram] unable to extract additional data; please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U
+ERROR: [Instagram] DUnjiPSDXDQ: Requested content is not available, rate-limit reached or login required. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies
