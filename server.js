@@ -41,24 +41,18 @@ app.post('/api/download', async (req, res) => {
 
         const data = await getInstagramMedia(cleanUrl);
 
+        // Enhanced error handling for images
         if (data.error) {
             console.error('yt-dlp error:', data.error);
-            // Check for image-only post error and handle it
-            if (data.error.includes('There is no video in this post')) {
-                // If it's a single image post, yt-dlp might still return the info or we can try to extract it
-                // For now, let's look for the thumbnail or other URL if present
-                if (!data.url && !data.entries) {
-                    // Try to fetch with a different format or just accept it's an image
-                    // Actually, Instagram posts often have the image URL in 'thumbnail'
-                }
-            } else if (!data.url && !data.entries) {
+            // If it's a "no video" error but we have thumbnail data, we can still show the image
+            if (!data.thumbnail && !data.entries) {
                 throw new Error(data.error);
             }
         }
 
-        // Add a specialized check for images if yt-dlp fails to find "video formats"
-        if (!data.formats && data.thumbnail) {
-            return res.json({
+        // Handle Image Posts
+        if (!data.formats && data.thumbnail && !data.entries) {
+             return res.json({
                 success: true,
                 mediaUrl: data.thumbnail,
                 url_list: [data.thumbnail],

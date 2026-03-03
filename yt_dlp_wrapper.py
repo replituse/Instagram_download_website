@@ -10,6 +10,9 @@ def get_info(url, session_id=None):
         'no_warnings': True,
         'extract_flat': False,
         'skip_download': True,
+        'ignoreerrors': True,
+        'no_check_certificate': True,
+        'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
     }
     
     cookie_path = None
